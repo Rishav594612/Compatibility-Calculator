@@ -1,125 +1,329 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <title>Friend Calculator</title>
-
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <style>
+        /* Page layout */
+        :root {
+            --bg: #fff0f6;
+            --accent: #d63384;
+            --accent-2: #cc6fcc;
+            --card-bg: #ffffff;
+        }
+
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             margin: 20px;
-            background: #fff0f6;
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         h2 {
             text-align: center;
-            color: #d63384;
+            color: var(--accent);
+            margin-bottom: 18px;
         }
 
+        /* Center box */
         .box {
-            background: white;
-            width: 350px;
-            margin: auto;
-            padding: 20px;
-            border-radius: 10px;
+            background: var(--card-bg);
+            width: 360px;
+            margin: 0 auto;
+            padding: 22px;
+            border-radius: 12px;
             border: 1px solid #e3b6d8;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
             text-align: center;
+            position: relative;
+            overflow: hidden; /* keep hearts inside */
         }
 
-        input {
-            padding: 8px;
-            width: 200px;
-            margin-top: 5px;
-            border: 1px solid #cc6fcc;
-            border-radius: 5px;
+        label {
+            font-size: 16px;
+            color: #333;
+        }
+
+        input[type="text"] {
+            padding: 8px 10px;
+            width: 220px;
+            margin-top: 6px;
+            border: 1px solid var(--accent-2);
+            border-radius: 6px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .controls {
+            margin-top: 14px;
         }
 
         button {
-            padding: 10px 20px;
-            background: #d63384;
+            padding: 10px 18px;
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-left: 8px;
         }
 
+        button:active { transform: translateY(1px); }
+
         #loveResult {
+            font-size: 16px;
+            margin-top: 16px;
+            font-weight: 700;
+            color: purple;
+            min-height: 28px;
+        }
+
+        /* Progress bar (Option 2) */
+        .progress-wrap {
+            width: 100%;
+            background: linear-gradient(90deg, #faf0fb, #fff);
+            border-radius: 12px;
+            padding: 8px;
+            margin-top: 12px;
+            box-sizing: border-box;
+            border: 1px solid rgba(204, 111, 204, 0.12);
+        }
+
+        .progress {
+            height: 28px;
+            background: linear-gradient(90deg, rgba(214,51,132,0.95), rgba(204,111,204,0.95));
+            width: 0%;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            transition: width 900ms cubic-bezier(.2,.9,.2,1);
+            box-shadow: 0 4px 12px rgba(214,51,132,0.18);
+        }
+
+        .progress-text {
+            font-size: 13px;
+            letter-spacing: 0.2px;
+        }
+
+        /* Floating hearts animation (Option 3) */
+        .hearts {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -10px;
+            bottom: -10px;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .heart {
+            position: absolute;
+            bottom: 6px;
             font-size: 18px;
-            margin-top: 20px;
-            font-weight: bold;
+            opacity: 0;
+            transform: translateY(0) scale(0.9);
+            animation: floatUp linear infinite;
+            will-change: transform, opacity;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.05);
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.9);
+            }
+            10% {
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+                transform: translateY(-180px) scale(1.05);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-260px) scale(1.1);
+            }
+        }
+
+        /* Small responsive tweak */
+        @media (max-width: 420px) {
+            .box { width: calc(100% - 32px); padding: 16px; }
+            input[type="text"] { width: 180px; }
         }
     </style>
 </head>
-
 <body>
     <h2>✨ Friend Calculator 💖🤩</h2>
 
-    <div class="box">
-        <label style="font-size:18px;">Your name:</label><br>
-        <input id="name1" placeholder="ABC">
-        <br><br>
+    <div class="box" id="card">
+        <label for="name1">Your name:</label><br />
+        <input id="name1" type="text" placeholder="ABC" autocomplete="off" />
 
-        <label style="font-size:18px;">Friend name:</label><br>
-        <input id="name2" placeholder="XYZ">
-        <br><br>
+        <div style="margin-top:12px;">
+            <label for="name2">Friend name:</label><br />
+            <input id="name2" type="text" placeholder="XYZ" autocomplete="off" />
+        </div>
 
-        <button id="calcBtn">Calculate Love %</button>
+        <div class="controls">
+            <button id="calcBtn">Calculate Love %</button>
+            <button id="resetBtn" style="background:#6c757d; margin-left:6px;">Reset</button>
+        </div>
 
-        <p id="loveResult"></p>
+        <p id="loveResult" aria-live="polite"></p>
+
+        
+        <div class="progress-wrap" aria-hidden="true">
+            <div class="progress" id="progressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+        </div>
+
+        
+        <div class="hearts" id="heartsContainer" aria-hidden="true"></div>
     </div>
 
     <script>
+        
         const n1 = document.getElementById('name1');
         const n2 = document.getElementById('name2');
         const calcBtn = document.getElementById('calcBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const loveResult = document.getElementById('loveResult');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const heartsContainer = document.getElementById('heartsContainer');
+        const card = document.getElementById('card');
 
+       
         function computeLovePercent(a, b) {
-            const s1 = a.trim().toLowerCase();
-            const s2 = b.trim().toLowerCase();
-
+            const s1 = String(a).trim().toLowerCase();
+            const s2 = String(b).trim().toLowerCase();
             if (!s1 || !s2) return null;
 
             let sum = 0;
-
             for (let ch of s1 + s2) {
-                sum += ch.charCodeAt(0);
+                sum += ch.charCodeAt(0) || 0;
             }
-
             sum += s1.length * 3 + s2.length * 7;
 
             let percent = sum % 101;
-
             if (percent === 100) percent = 99;
             if (percent === 0) percent = 1;
-
             return percent;
         }
 
+       
+        function animateProgress(percent) {
+            const safe = Math.max(0, Math.min(100, Math.round(percent)));
+            progressBar.style.width = safe + '%';
+            progressText.textContent = safe + '%';
+            progressBar.setAttribute('aria-valuenow', safe);
+        }
+
+       
+        function spawnHeart(xPercent, delayMs, scale = 1, emoji = '💜') {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = xPercent + '%';
+            heart.style.fontSize = (14 * scale) + 'px';
+            heart.style.animationDuration = (3000 + Math.random() * 1800) + 'ms';
+            heart.style.animationDelay = delayMs + 'ms';
+            heart.textContent = emoji;
+            heartsContainer.appendChild(heart);
+
+            // remove when animation is complete
+            const total = parseFloat(heart.style.animationDuration) + parseFloat(heart.style.animationDelay) + 200;
+            setTimeout(() => {
+                heart.remove();
+            }, total);
+        }
+
+       
+        function celebrateWithHearts(percent) {
+           
+            heartsContainer.innerHTML = '';
+
+            
+            const count = Math.min(12, Math.max(3, Math.round((percent / 100) * 12)));
+
+            for (let i = 0; i < count; i++) {
+                
+                const x = 10 + Math.random() * 80;
+                const delay = Math.round(Math.random() * 600);
+                const scale = 0.9 + Math.random() * 1.1;
+                
+                const emoji = (Math.random() > 0.5) ? '💜' : '💖';
+                spawnHeart(x, delay, scale, emoji);
+            }
+
+            
+            if (percent > 80) {
+                for (let j = 0; j < 6; j++) {
+                    const x = 10 + Math.random() * 80;
+                    const delay = 600 + Math.random() * 400;
+                    const scale = 1 + Math.random() * 1.4;
+                    spawnHeart(x, delay, scale, '💕');
+                }
+            }
+        }
+
+        /* click handler */
         calcBtn.addEventListener('click', function () {
             const a = n1.value;
             const b = n2.value;
-
             const p = computeLovePercent(a, b);
 
             if (p === null) {
                 loveResult.style.color = 'crimson';
                 loveResult.textContent = 'Please enter both names.';
+                animateProgress(0);
+                heartsContainer.innerHTML = '';
                 return;
             }
 
             loveResult.style.color = 'purple';
-            loveResult.textContent = `Love between "${a}" and "${b}" is ${p}% 💜 `;
-
+            loveResult.textContent = `Love between "${a}" and "${b}" is ${p}%`;
             if (p > 80) {
                 loveResult.textContent += ' — Match made in code!';
             } else if (p < 30) {
                 loveResult.textContent += ' — Keep building the relationship!';
             }
+
+            
+            animateProgress(p);
+
+            
+            celebrateWithHearts(p);
         });
+
+      
+        resetBtn.addEventListener('click', function () {
+            n1.value = '';
+            n2.value = '';
+            loveResult.textContent = '';
+            animateProgress(0);
+            heartsContainer.innerHTML = '';
+            n1.focus();
+        });
+
+        
+        [n1, n2].forEach(el => {
+            el.addEventListener('keydown', function (ev) {
+                if (ev.key === 'Enter') {
+                    calcBtn.click();
+                }
+            });
+        });
+
+        
+        animateProgress(0);
     </script>
 </body>
 </html>
