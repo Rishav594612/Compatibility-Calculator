@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Friend Calculator</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 20px;
+            background: #fff0f6;
+        }
+
+        h2 {
+            text-align: center;
+            color: #d63384;
+        }
+
+        .box {
+            background: white;
+            width: 350px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e3b6d8;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        input {
+            padding: 8px;
+            width: 200px;
+            margin-top: 5px;
+            border: 1px solid #cc6fcc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #d63384;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #loveResult {
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>✨ Friend Calculator 💖🤩</h2>
+
+    <div class="box">
+        <label style="font-size:18px;">Your name:</label><br>
+        <input id="name1" placeholder="ABC">
+        <br><br>
+
+        <label style="font-size:18px;">Friend name:</label><br>
+        <input id="name2" placeholder="XYZ">
+        <br><br>
+
+        <button id="calcBtn">Calculate Love %</button>
+
+        <p id="loveResult"></p>
+    </div>
+
+    <script>
+        const n1 = document.getElementById('name1');
+        const n2 = document.getElementById('name2');
+        const calcBtn = document.getElementById('calcBtn');
+        const loveResult = document.getElementById('loveResult');
+
+        function computeLovePercent(a, b) {
+            const s1 = a.trim().toLowerCase();
+            const s2 = b.trim().toLowerCase();
+
+            if (!s1 || !s2) return null;
+
+            let sum = 0;
+
+            for (let ch of s1 + s2) {
+                sum += ch.charCodeAt(0);
+            }
+
+            sum += s1.length * 3 + s2.length * 7;
+
+            let percent = sum % 101;
+
+            if (percent === 100) percent = 99;
+            if (percent === 0) percent = 1;
+
+            return percent;
+        }
+
+        calcBtn.addEventListener('click', function () {
+            const a = n1.value;
+            const b = n2.value;
+
+            const p = computeLovePercent(a, b);
+
+            if (p === null) {
+                loveResult.style.color = 'crimson';
+                loveResult.textContent = 'Please enter both names.';
+                return;
+            }
+
+            loveResult.style.color = 'purple';
+            loveResult.textContent = `Love between "${a}" and "${b}" is ${p}% 💜 `;
+
+            if (p > 80) {
+                loveResult.textContent += ' — Match made in code!';
+            } else if (p < 30) {
+                loveResult.textContent += ' — Keep building the relationship!';
+            }
+        });
+    </script>
+</body>
+</html>
